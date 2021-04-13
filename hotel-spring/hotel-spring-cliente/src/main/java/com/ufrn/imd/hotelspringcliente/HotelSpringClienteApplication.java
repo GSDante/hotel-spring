@@ -13,17 +13,25 @@ public class HotelSpringClienteApplication {
 	
 	final static String url_login = "http://localhost:8080/ClienteAuth/login";
 	final static String url_cadastro = "http://localhost:8080/ClienteAuth/cadastro";
+	final static String url_show = "http://localhost:8081/Quartos";
+	final static String url_alugar = "http://localhost:8081/Quartos/Alugar";
+	final static String url_showQuartoUsuario = "http://localhost:8081/Quartos/QuartosDoCliente";
+	final static String url_avaliar = "http://localhost:8081/Quartos/Avaliar";
 
+
+	
 	public static RestTemplate restTemplate = new RestTemplate();
 	public static Gson gson = new Gson();
 	public static Scanner scanner = new Scanner(System.in);
 	public static int escolha;
 	public static String response = null;
+	public static String nomeUsuario = null;
+	public static String login = null;
 	
 	public static void login() {
 		logger("Login:");
 		scanner.nextLine();
-		String login = scanner.nextLine();
+		login = scanner.nextLine();
 		logger("Senha:");
 		String senha = scanner.nextLine();
 		MessageUsuario msgUsuario = new MessageUsuario(login,senha);
@@ -32,6 +40,38 @@ public class HotelSpringClienteApplication {
 		response = restTemplate.postForObject(url_login, msgUsuarioJson, String.class);
 		logger("Resposta do post login: " + response);
 		
+	}
+	
+	public static void showQuartos() {
+		response = restTemplate.getForObject(url_show, String.class);
+		logger(response);
+	}
+	
+	public static void alugar() {
+		scanner.nextLine();
+		String numeroQuarto = scanner.nextLine();
+		MessageQuarto msg = new MessageQuarto(numeroQuarto,login);
+		
+		String message = gson.toJson(msg);
+		response = restTemplate.postForObject(url_alugar,message, String.class);
+		logger(response);
+	}
+	
+	public static void avaliar() {
+		response = restTemplate.postForObject(url_showQuartoUsuario,login, String.class);
+		
+		
+		logger(response);
+		logger("\nDê uma nota de 0 a 10:\n");
+		scanner.nextLine();
+		String nota = scanner.nextLine();
+		float notaIn = Float.parseFloat(nota);
+		
+		MessageQuartoNota msg = new MessageQuartoNota(notaIn,login);
+		String message = gson.toJson(msg);
+		
+		response = restTemplate.postForObject(url_avaliar, message, String.class);
+		logger(response);
 	}
 	
 	public static void cadastrar() {
@@ -55,7 +95,8 @@ public class HotelSpringClienteApplication {
 			while(true) {
 				switch(escolha){
 				case 1:
-					login();
+					login();					
+					
 					break;
 				case 2:
 					cadastrar();
@@ -73,15 +114,34 @@ public class HotelSpringClienteApplication {
 				}else if(response.equals("10")) {
 					logger("Cadastro feito com sucesso");
 					break;
+				}else {
+					
+					while(true) {
+						logger(" 1-Escolher quarto\n 2-Avaliar quarto\n 3-Sair");
+						escolha = scanner.nextInt();
+						
+						switch(escolha) {
+						case 1:
+							showQuartos();
+							alugar();
+							break;
+						case 2:
+							avaliar();
+							break;
+						default:
+							break;
+						}
+
+						if(escolha == 3) {
+							break;
+						}
+					}
 				}
 			}
+
 			
 		}
-		
-		
-	
-		
-		
+
 		
 	}
 	

@@ -1,6 +1,5 @@
 package com.ufrn.imd.hotelspringclienteAuth.model;
 
-import java.io.Serializable;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,6 +21,8 @@ public class Usuario{
 	private String login;
 	private String senha;
 	private long tokenValue;
+	
+	private int port;
 
 	public Usuario() {}
 	public Usuario(String login, String senha, long tokenValue) {
@@ -57,6 +58,12 @@ public class Usuario{
 
 	public void setTokenValue(long tokenValue) {
 		this.tokenValue = tokenValue;
+	}
+	public int getPort() {
+		return port;
+	}
+	public void setPort(int port) {
+		this.port = port;
 	}
 	
 	
